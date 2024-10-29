@@ -3,7 +3,7 @@ Description=Home Automation
 After=network.target
 
 [Service]
-User=<username>
+User=root
 Group=www-data
 WorkingDirectory=<path to>
 ExecStart=<path to>/home_automation.py

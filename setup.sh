@@ -23,12 +23,10 @@
 #
 set -Ee
 set -o pipefail
-username=$(whoami)
 echo "Configuring your system . . ."
 sudo apt install --assume-yes $(<requirements_apt.txt)
 sudo cp -v home_automation.service /etc/systemd/system/home_automation.service
 sudo sed -i "s:<path to>:$PWD:g" /etc/systemd/system/home_automation.service
-sudo sed -i "s:<username>:$username:g" /etc/systemd/system/home_automation.service
 
 echo "Enabling and Starting Home Automation Service . . ."
 sudo systemctl enable home_automation.service
