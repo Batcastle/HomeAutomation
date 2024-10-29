@@ -1,0 +1,26 @@
+{
+    "presence_check": [
+            "192.168.1.20",
+            "192.168.1.19"
+        ],
+    "fork_if_setup": false,
+    "bridge_ip": "192.168.1.18",
+    "presence_check_frequency": 45,
+    "sunset_time_check_frequency": 20000,
+    "main_loop_frequency": 15,
+    "deps": ["phue", "ping3", "urllib3"],
+    "lights": [
+            "Right Lamp",
+            "Left Lamp",
+            "Deathly Hallows Lamp"
+        ],
+    "on_time": {
+            "present": "sunset",
+            "not_present": "sunset+3"
+        },
+    "brightness": {
+            "present": 203,
+            "not_present": 85
+        },
+    "venv_name": "venv"
+}
