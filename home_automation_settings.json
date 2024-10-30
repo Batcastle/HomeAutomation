@@ -18,13 +18,22 @@
             "Right Lamp",
             "Deathly Hallows Lamp"
         ],
-    "on_time": {
+    "present_other": [
+            "Fan"
+        ],
+    "not_present_other": [],
+    "on_time_lights": {
             "present": "sunset",
             "not_present": "sunset+3"
+        },
+    "on_time_other": {
+            "present": "9:15 PM",
+            "not_present": "11:00 PM"
         },
     "brightness": {
             "present": 203,
             "not_present": 85
         },
+    "time_format": "%I:%M %p",
     "venv_name": "venv"
 }
