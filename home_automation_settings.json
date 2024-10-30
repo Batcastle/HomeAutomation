@@ -9,11 +9,15 @@
     "sunset_time_check_frequency": 20000,
     "main_loop_frequency": 15,
     "deps": ["phue", "ping3", "urllib3"],
-    "lights": [
+    "present_lights": [
             "Right Lamp",
             "Left Lamp",
             "Deathly Hallows Lamp",
             "Office Lamp"
+        ],
+    "not_present_lights": [
+            "Right Lamp",
+            "Deathly Hallows Lamp"
         ],
     "on_time": {
             "present": "sunset",

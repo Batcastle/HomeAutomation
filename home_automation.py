@@ -178,7 +178,7 @@ def home_automation(settings: dict, phue, http) -> None:
                 if time.time() >= sunset_times["sunset"]:
                     if not lights_touched:
                         print(f"{ B }People are here and it is the configured time! Turning on the lights!{ NC }")
-                        for each in settings["lights"]:
+                        for each in settings["present_lights"]:
                             if not bridge.get_light(each)["state"]["on"]:
                                 print(f"Turning on: {each}")
                                 bridge.set_light(each, "on", True)
@@ -194,7 +194,7 @@ def home_automation(settings: dict, phue, http) -> None:
                     if time.time() >= (sunset_times["sunset"] - offset):
                         if not lights_touched:
                             print(f"{ B }People are here and it is at/after sunset! Turning on the lights!{ NC }")
-                            for each in settings["lights"]:
+                            for each in settings["present_lights"]:
                                 if not bridge.get_light(each)["state"]["on"]:
                                     print(f"Turning on: {each}")
                                     bridge.set_light(each, "on", True)
@@ -206,7 +206,7 @@ def home_automation(settings: dict, phue, http) -> None:
                     if time.time() >= (sunset_times["sunset"] + offset):
                         if not lights_touched:
                             print(f"{ B }People are here and it is at/after sunset! Turning on the lights!{ NC }")
-                            for each in settings["lights"]:
+                            for each in settings["present_lights"]:
                                 if not bridge.get_light(each)["state"]["on"]:
                                     print(f"Turning on: {each}")
                                     bridge.set_light(each, "on", True)
@@ -219,7 +219,7 @@ def home_automation(settings: dict, phue, http) -> None:
                 if time.time() >= sunset_times["sunset"]:
                     if not lights_touched:
                         print(f"{ B }People are NOT here and it is at/after sunset! Turning on the lights!{ NC }")
-                        for each in settings["lights"]:
+                        for each in settings["not_present_lights"]:
                             if not bridge.get_light(each)["state"]["on"]:
                                 print(f"Turning on: {each}")
                                 bridge.set_light(each, "on", True)
@@ -235,7 +235,7 @@ def home_automation(settings: dict, phue, http) -> None:
                     if time.time() >= (sunset_times["sunset"] - offset):
                         if not lights_touched:
                             print(f"{ B }People are NOT here and it is at/after sunset! Turning on the lights!{ NC }")
-                            for each in settings["lights"]:
+                            for each in settings["not_present_lights"]:
                                 if not bridge.get_light(each)["state"]["on"]:
                                     print(f"Turning on: {each}")
                                     bridge.set_light(each, "on", True)
@@ -247,7 +247,7 @@ def home_automation(settings: dict, phue, http) -> None:
                     if time.time() >= (sunset_times["sunset"] + offset):
                         if not lights_touched:
                             print(f"{ B }People are NOT here and it is at/after sunset! Turning on the lights!{ NC }")
-                            for each in settings["lights"]:
+                            for each in settings["not_present_lights"]:
                                 if not bridge.get_light(each)["state"]["on"]:
                                     print(f"Turning on: {each}")
                                     bridge.set_light(each, "on", True)
