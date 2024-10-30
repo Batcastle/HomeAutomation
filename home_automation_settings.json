@@ -12,8 +12,7 @@
     "present_lights": [
             "Right Lamp",
             "Left Lamp",
-            "Deathly Hallows Lamp",
-            "Office Lamp"
+            "Deathly Hallows Lamp"
         ],
     "not_present_lights": [
             "Right Lamp",
