@@ -12,7 +12,8 @@
     "lights": [
             "Right Lamp",
             "Left Lamp",
-            "Deathly Hallows Lamp"
+            "Deathly Hallows Lamp",
+            "Office Lamp"
         ],
     "on_time": {
             "present": "sunset",

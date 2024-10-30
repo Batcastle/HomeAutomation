@@ -157,7 +157,6 @@ def home_automation(settings: dict, phue, http) -> None:
     bridge = phue.Bridge(settings["bridge_ip"])
     bridge.connect()
     bridge.get_api()
-    bridge.set_light("Left Lamp", "on", False)
 
     sunset_check_time = time.time()
     sunset_times = get_sunset_time(location["coords"], location["tz"], http)
@@ -181,6 +180,7 @@ def home_automation(settings: dict, phue, http) -> None:
                         print(f"{ B }People are here and it is the configured time! Turning on the lights!{ NC }")
                         for each in settings["lights"]:
                             if not bridge.get_light(each)["state"]["on"]:
+                                print(f"Turning on: {each}")
                                 bridge.set_light(each, "on", True)
                             bridge.set_light(each, "bri", settings["brightness"]["present"])
                         lights_touched = True
@@ -196,6 +196,7 @@ def home_automation(settings: dict, phue, http) -> None:
                             print(f"{ B }People are here and it is at/after sunset! Turning on the lights!{ NC }")
                             for each in settings["lights"]:
                                 if not bridge.get_light(each)["state"]["on"]:
+                                    print(f"Turning on: {each}")
                                     bridge.set_light(each, "on", True)
                                 bridge.set_light(each, "bri", settings["brightness"]["present"])
                             lights_touched = True
@@ -207,6 +208,7 @@ def home_automation(settings: dict, phue, http) -> None:
                             print(f"{ B }People are here and it is at/after sunset! Turning on the lights!{ NC }")
                             for each in settings["lights"]:
                                 if not bridge.get_light(each)["state"]["on"]:
+                                    print(f"Turning on: {each}")
                                     bridge.set_light(each, "on", True)
                                 bridge.set_light(each, "bri", settings["brightness"]["present"])
                             lights_touched = True
@@ -219,6 +221,7 @@ def home_automation(settings: dict, phue, http) -> None:
                         print(f"{ B }People are NOT here and it is at/after sunset! Turning on the lights!{ NC }")
                         for each in settings["lights"]:
                             if not bridge.get_light(each)["state"]["on"]:
+                                print(f"Turning on: {each}")
                                 bridge.set_light(each, "on", True)
                             bridge.set_light(each, "bri", settings["brightness"]["not_present"])
                         lights_touched = True
@@ -234,6 +237,7 @@ def home_automation(settings: dict, phue, http) -> None:
                             print(f"{ B }People are NOT here and it is at/after sunset! Turning on the lights!{ NC }")
                             for each in settings["lights"]:
                                 if not bridge.get_light(each)["state"]["on"]:
+                                    print(f"Turning on: {each}")
                                     bridge.set_light(each, "on", True)
                                 bridge.set_light(each, "bri", settings["brightness"]["not_present"])
                             lights_touched = True
@@ -245,6 +249,7 @@ def home_automation(settings: dict, phue, http) -> None:
                             print(f"{ B }People are NOT here and it is at/after sunset! Turning on the lights!{ NC }")
                             for each in settings["lights"]:
                                 if not bridge.get_light(each)["state"]["on"]:
+                                    print(f"Turning on: {each}")
                                     bridge.set_light(each, "on", True)
                                 bridge.set_light(each, "bri", settings["brightness"]["not_present"])
                             lights_touched = True
