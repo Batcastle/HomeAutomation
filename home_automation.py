@@ -114,6 +114,8 @@ def main() -> None:
     settings_file = "home_automation_settings.json"
     with open(settings_file, "r") as file:
         settings = json.load(file)
+    for each in settings["brightness"]:
+        settings["brightness"][each] = round(254 * settings["brightness"][each])
     # Check if running as root as ping3 requires it.
     if os.geteuid() != 0:
         eprint("Please run this script as root!")

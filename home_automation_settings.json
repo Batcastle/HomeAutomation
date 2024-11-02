@@ -29,8 +29,8 @@
             "not_present": "11:00 PM"
         },
     "brightness": {
-            "present": 178,
-            "not_present": 85
+            "present": 0.7,
+            "not_present": 0.3
         },
     "time_format": "%I:%M %p",
     "venv_name": "venv"
