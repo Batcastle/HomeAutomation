@@ -29,12 +29,19 @@ import json
 import shutil
 import time
 import subprocess as subproc
-import urllib3
-import ping3
+try:
+    import urllib3
+except ImportError:
+    print("`urllib3' is not available! Likely not running in a venv!")
+try:
+    import ping3
+except ImportError:
+    print("`ping3' is not available! Likely not running in a venv!")
 try:
     import phue
 except ImportError:
     print("`phue' is not available! Likely not running in a venv!")
+
 G = "\033[92m"
 R = "\033[91m"
 NC = "\033[0m"
