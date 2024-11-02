@@ -111,7 +111,8 @@ def get_sunset_time(loc: dict, tz: str, http):
     return_data["sunset"] = time_to_unix(data["sunset"], "%I:%M:%S %p")
     return_data["civil_twilight"] = time_to_unix(data["civil_twilight_end"], "%I:%M:%S %p")
     return_data["nautical_twilight"] = time_to_unix(data["nautical_twilight_end"], "%I:%M:%S %p")
-    return_data["astronomical_twilight"] = time_to_unix(data["astronomical_twilight_end"], "%I:%M:%S %p")
+    return_data["astronomical_twilight"] = time_to_unix(data["astronomical_twilight_end"],
+                                                        "%I:%M:%S %p")
     return return_data
 
 
