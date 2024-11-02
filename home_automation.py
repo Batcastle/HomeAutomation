@@ -374,6 +374,8 @@ def home_automation(settings: dict, http) -> None:
             others_touched = False
             lights_touched = False
             midnight = time_to_unix("00:00", "%H:%M")
+            sunset_check_time = time.time()
+            sunset_times = get_sunset_time(location["coords"], location["tz"], http)
         time.sleep(settings["main_loop_frequency"])
 
 
