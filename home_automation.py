@@ -32,15 +32,15 @@ import subprocess as subproc
 try:
     import urllib3
 except ImportError:
-    print("`urllib3' is not available! Likely not running in a venv!")
+    print("`urllib3' is not available! Likely not running in a venv!", file=sys.stderr)
 try:
     import ping3
 except ImportError:
-    print("`ping3' is not available! Likely not running in a venv!")
+    print("`ping3' is not available! Likely not running in a venv!", file=sys.stderr)
 try:
     import phue
 except ImportError:
-    print("`phue' is not available! Likely not running in a venv!")
+    print("`phue' is not available! Likely not running in a venv!", file=sys.stderr)
 
 G = "\033[92m"
 R = "\033[91m"
@@ -156,7 +156,7 @@ def main() -> None:
         sys.exit(1)
     # Check if we are running in a venv, if not, set it up, copy ourselves into it, and re-execute
     if not is_running_in_venv():
-        print(f"{ Y }Setting up venv...{ NC }")
+        eprint(f"{ Y }Setting up venv...{ NC }")
         subproc.check_call(["python3", "-m", "venv", settings["venv_name"]])
         cmd = f"bash -c 'source ./{ settings['venv_name'] }/bin/activate && pip3 install { ' '.join(settings['deps']) }'"
         subproc.check_call(cmd, shell=True)
@@ -165,7 +165,7 @@ def main() -> None:
         source = "/".join(sys.argv[0].split("/")[:-1]) + "/" + settings_file
         settings_dest = "./" + settings["venv_name"] + "/" + settings_file
         shutil.copyfile(source, settings_dest)
-        print(f"{ G }Venv ready!{ NC }")
+        eprint(f"{ G }Venv ready!{ NC }")
         if settings["fork_if_setup"]:
             subproc.Popen([f"./{ settings['venv_name'] }/bin/python", dest])
         else:
@@ -180,7 +180,7 @@ def main() -> None:
 def home_automation(settings: dict, http) -> None:
     """Main logic loop"""
     # Get location info
-    print(f"{ G }Reached Main Process Loop!{ NC }")
+    eprint(f"{ G }Reached Main Process Loop!{ NC }")
     location = get_location(http)
     bridge = phue.Bridge(settings["bridge_ip"])
     bridge.connect()
@@ -207,7 +207,7 @@ def home_automation(settings: dict, http) -> None:
                                sunset_times, settings["time_format"]):
                     for each in settings["present_lights"]:
                         if not bridge.get_light(each)["state"]["on"]:
-                            print(f"Turning on: {each}")
+                            eprint(f"Turning on: {each}")
                             bridge.set_light(each, "on", True)
                         bridge.set_light(each, "bri", settings["brightness"]["present"])
                     lights_touched = True
@@ -216,7 +216,7 @@ def home_automation(settings: dict, http) -> None:
                                sunset_times, settings["time_format"]):
                     for each in settings["not_present_lights"]:
                         if not bridge.get_light(each)["state"]["on"]:
-                            print(f"Turning on: {each}")
+                            eprint(f"Turning on: {each}")
                             bridge.set_light(each, "on", True)
                         bridge.set_light(each, "bri", settings["brightness"]["not_present"])
                     lights_touched = True
@@ -227,7 +227,7 @@ def home_automation(settings: dict, http) -> None:
                                sunset_times, settings["time_format"]):
                     for each in settings["present_other"]:
                         if not bridge.get_light(each)["state"]["on"]:
-                            print(f"Turning on: {each}")
+                            eprint(f"Turning on: {each}")
                             bridge.set_light(each, "on", True)
                     others_touched = True
             else:
@@ -235,7 +235,7 @@ def home_automation(settings: dict, http) -> None:
                                sunset_times, settings["time_format"]):
                     for each in settings["not_present_other"]:
                         if not bridge.get_light(each)["state"]["on"]:
-                            print(f"Turning on: {each}")
+                            eprint(f"Turning on: {each}")
                             bridge.set_light(each, "on", True)
                     others_touched = True
 
