@@ -116,6 +116,32 @@ def get_sunset_time(loc: dict, tz: str, http):
     return return_data
 
 
+def need_to_act(on_time_settings: dict, sunset_times: dict, time_format: str) -> bool:
+    """This Logic flow determines if anything needs to be done."""
+    if on_time_settings == "sunset":
+        if time.time() >= sunset_times["sunset"]:
+            return True
+    else:
+        # with the way my settings work, you can use a delta-offset to
+        # control when lights turn on
+        # this is relative to sunset each day, in hours
+        if "-" in on_time_settings:
+            # this is for a negative offset
+            offset = int(on_time_settings.split("-")[-1]) * 3600
+            if time.time() >= (sunset_times["sunset"] - offset):
+                return True
+        elif "+" in on_time_settings:
+            # this is for a positive offset
+            offset = int(on_time_settings.split("+")[-1]) * 3600
+            if time.time() >= (sunset_times["sunset"] + offset):
+                return True
+        else:
+            offset = time_to_unix(on_time_settings, time_format)
+            if time.time() >= offset:
+                return True
+    return False
+
+
 def main() -> None:
     """Main Setup Loop"""
     # Start out by loading our settings
@@ -175,209 +201,43 @@ def home_automation(settings: dict, http) -> None:
             presence_check_time = time.time()
             presence = check_for_presence(settings["presence_check"])
 
-        # Turn the lights on if people are here at the designated time.
-        # This section is as much for security as convenience. We turn the lights on both to make potential
-        # burglers think we are home, as well as to not have to think about turning the lights on at night.
-        if presence:
-            if settings["on_time_lights"]["present"] == "sunset":
-                if time.time() >= sunset_times["sunset"]:
-                    if not lights_touched:
-                        print(f"{ B }People are here and it is the configured time! Turning on the lights!{ NC }")
-                        for each in settings["present_lights"]:
-                            if not bridge.get_light(each)["state"]["on"]:
-                                print(f"Turning on: {each}")
-                                bridge.set_light(each, "on", True)
-                            bridge.set_light(each, "bri", settings["brightness"]["present"])
-                        lights_touched = True
+        if not lights_touched:
+            if presence:
+                if need_to_act(settings["on_time_lights"]["present"],
+                               sunset_times, settings["time_format"]):
+                    for each in settings["present_lights"]:
+                        if not bridge.get_light(each)["state"]["on"]:
+                            print(f"Turning on: {each}")
+                            bridge.set_light(each, "on", True)
+                        bridge.set_light(each, "bri", settings["brightness"]["present"])
+                    lights_touched = True
             else:
-                # with the way my settings work, you can use a delta-offset to
-                # control when lights turn on
-                # this is relative to sunset each day, in hours
-                if "-" in settings["on_time_lights"]["present"]:
-                    # this is for a negative offset
-                    offset = int(settings["on_time_lights"]["present"].split("-")[-1]) * 3600
-                    if time.time() >= (sunset_times["sunset"] - offset):
-                        if not lights_touched:
-                            print(f"{ B }People are here and it is at/after sunset! Turning on the lights!{ NC }")
-                            for each in settings["present_lights"]:
-                                if not bridge.get_light(each)["state"]["on"]:
-                                    print(f"Turning on: {each}")
-                                    bridge.set_light(each, "on", True)
-                                bridge.set_light(each, "bri", settings["brightness"]["present"])
-                            lights_touched = True
-                elif "+" in settings["on_time_lights"]["present"]:
-                    # this is for a positive offset
-                    offset = int(settings["on_time_lights"]["present"].split("+")[-1]) * 3600
-                    if time.time() >= (sunset_times["sunset"] + offset):
-                        if not lights_touched:
-                            print(f"{ B }People are here and it is at/after sunset! Turning on the lights!{ NC }")
-                            for each in settings["present_lights"]:
-                                if not bridge.get_light(each)["state"]["on"]:
-                                    print(f"Turning on: {each}")
-                                    bridge.set_light(each, "on", True)
-                                bridge.set_light(each, "bri", settings["brightness"]["present"])
-                            lights_touched = True
-                else:
-                    offset = time_to_unix(settings["on_time_lights"]["present"], settings["time_format"])
-                    if time.time() >= offset:
-                        if not lights_touched:
-                            print(f"{ B }People are here and it is after the configured time! Turning on the lights!{ NC }")
-                            for each in settings["present_lights"]:
-                                if not bridge.get_light(each)["state"]["on"]:
-                                    print(f"Turning on: {each}")
-                                    bridge.set_light(each, "on", True)
-                                bridge.set_light(each, "bri", settings["brightness"]["present"])
-                            lights_touched = True
+                if need_to_act(settings["on_time_lights"]["not_present"],
+                               sunset_times, settings["time_format"]):
+                    for each in settings["not_present_lights"]:
+                        if not bridge.get_light(each)["state"]["on"]:
+                            print(f"Turning on: {each}")
+                            bridge.set_light(each, "on", True)
+                        bridge.set_light(each, "bri", settings["brightness"]["not_present"])
+                    lights_touched = True
 
-        # People are not here. Turn the lights on at a slightly different time.
-        else:
-            if settings["on_time_lights"]["not_present"] == "sunset":
-                if time.time() >= sunset_times["sunset"]:
-                    if not lights_touched:
-                        print(f"{ B }People are NOT here and it is at/after sunset! Turning on the lights!{ NC }")
-                        for each in settings["not_present_lights"]:
-                            if not bridge.get_light(each)["state"]["on"]:
-                                print(f"Turning on: {each}")
-                                bridge.set_light(each, "on", True)
-                            bridge.set_light(each, "bri", settings["brightness"]["not_present"])
-                        lights_touched = True
+        if not others_touched:
+            if presence:
+                if need_to_act(settings["on_time_other"]["present"],
+                               sunset_times, settings["time_format"]):
+                    for each in settings["present_other"]:
+                        if not bridge.get_light(each)["state"]["on"]:
+                            print(f"Turning on: {each}")
+                            bridge.set_light(each, "on", True)
+                    others_touched = True
             else:
-                # with the way my settings work, you can use a delta-offset
-                # to control when lights turn on
-                # this is relative to sunset each day, in hours
-                if "-" in settings["on_time_lights"]["not_present"]:
-                    # this is for a negative offset
-                    offset = int(settings["on_time_lights"]["not_present"].split("-")[-1]) * 3600
-                    if time.time() >= (sunset_times["sunset"] - offset):
-                        if not lights_touched:
-                            print(f"{ B }People are NOT here and it is at/after sunset! Turning on the lights!{ NC }")
-                            for each in settings["not_present_lights"]:
-                                if not bridge.get_light(each)["state"]["on"]:
-                                    print(f"Turning on: {each}")
-                                    bridge.set_light(each, "on", True)
-                                bridge.set_light(each, "bri", settings["brightness"]["not_present"])
-                            lights_touched = True
-                elif "+" in settings["on_time_lights"]["not_present"]:
-                    # this is for a positive offset
-                    offset = int(settings["on_time_lights"]["not_present"].split("+")[-1]) * 3600
-                    if time.time() >= (sunset_times["sunset"] + offset):
-                        if not lights_touched:
-                            print(f"{ B }People are NOT here and it is at/after sunset! Turning on the lights!{ NC }")
-                            for each in settings["not_present_lights"]:
-                                if not bridge.get_light(each)["state"]["on"]:
-                                    print(f"Turning on: {each}")
-                                    bridge.set_light(each, "on", True)
-                                bridge.set_light(each, "bri", settings["brightness"]["not_present"])
-                            lights_touched = True
-                else:
-                    offset = time_to_unix(settings["on_time_lights"]["not_present"], settings["time_format"])
-                    if time.time() >= offset:
-                        if not lights_touched:
-                            print(f"{ B }People are NOT here and it is after the configured time! Turning on the lights!{ NC }")
-                            for each in settings["not_present_lights"]:
-                                if not bridge.get_light(each)["state"]["on"]:
-                                    print(f"Turning on: {each}")
-                                    bridge.set_light(each, "on", True)
-                                bridge.set_light(each, "bri", settings["brightness"]["present"])
-                            lights_touched = True
-
-        # This section is almost solely for convenience. We want to turn certain things on,
-        # at certain times, assuming certain people are home. Otherwise, don't bother
-        # turning them on as it would be a waste of power.
-        if presence:
-            if settings["on_time_other"]["present"] == "sunset":
-                if time.time() >= sunset_times["sunset"]:
-                    if not others_touched:
-                        print(f"{ B }People are here and it is the configured time! Turning on other devices!{ NC }")
-                        for each in settings["present_other"]:
-                            if not bridge.get_light(each)["state"]["on"]:
-                                print(f"Turning on: {each}")
-                                bridge.set_light(each, "on", True)
-                        others_touched = True
-            else:
-                # with the way my settings work, you can use a delta-offset to
-                # control when lights turn on
-                # this is relative to sunset each day, in hours
-                if "-" in settings["on_time_other"]["present"]:
-                    # this is for a negative offset
-                    offset = int(settings["on_time_other"]["present"].split("-")[-1]) * 3600
-                    if time.time() >= (sunset_times["sunset"] - offset):
-                        if not others_touched:
-                            print(f"{ B }People are here and it is at/after sunset! Turning on other devices!{ NC }")
-                            for each in settings["present_other"]:
-                                if not bridge.get_light(each)["state"]["on"]:
-                                    print(f"Turning on: {each}")
-                                    bridge.set_light(each, "on", True)
-                            others_touched = True
-                elif "+" in settings["on_time_other"]["present"]:
-                    # this is for a positive offset
-                    offset = int(settings["on_time_other"]["present"].split("+")[-1]) * 3600
-                    if time.time() >= (sunset_times["sunset"] + offset):
-                        if not others_touched:
-                            print(f"{ B }People are here and it is at/after sunset! Turning on other devices!{ NC }")
-                            for each in settings["present_other"]:
-                                if not bridge.get_light(each)["state"]["on"]:
-                                    print(f"Turning on: {each}")
-                                    bridge.set_light(each, "on", True)
-                            others_touched = True
-                else:
-                    offset = time_to_unix(settings["on_time_other"]["present"], settings["time_format"])
-                    if time.time() >= offset:
-                        if not others_touched:
-                            print(f"{ B }People are here and it is after the configured time! Turning on other devices!{ NC }")
-                            for each in settings["present_other"]:
-                                if not bridge.get_light(each)["state"]["on"]:
-                                    print(f"Turning on: {each}")
-                                    bridge.set_light(each, "on", True)
-                            others_touched = True
-
-        # People are not here. Turn the lights on at a slightly different time.
-        else:
-            if settings["on_time_other"]["not_present"] == "sunset":
-                if time.time() >= sunset_times["sunset"]:
-                    if not others_touched:
-                        print(f"{ B }People are NOT here and it is at/after sunset! Turning on other devices!{ NC }")
-                        for each in settings["not_present_other"]:
-                            if not bridge.get_light(each)["state"]["on"]:
-                                print(f"Turning on: {each}")
-                                bridge.set_light(each, "on", True)
-                        others_touched = True
-            else:
-                # with the way my settings work, you can use a delta-offset
-                # to control when lights turn on
-                # this is relative to sunset each day, in hours
-                if "-" in settings["on_time_other"]["not_present"]:
-                    # this is for a negative offset
-                    offset = int(settings["on_time_other"]["not_present"].split("-")[-1]) * 3600
-                    if time.time() >= (sunset_times["sunset"] - offset):
-                        if not others_touched:
-                            print(f"{ B }People are NOT here and it is at/after sunset! Turning on other devices!{ NC }")
-                            for each in settings["not_present_other"]:
-                                if not bridge.get_light(each)["state"]["on"]:
-                                    print(f"Turning on: {each}")
-                                    bridge.set_light(each, "on", True)
-                            others_touched = True
-                elif "+" in settings["on_time_other"]["not_present"]:
-                    # this is for a positive offset
-                    offset = int(settings["on_time_other"]["not_present"].split("+")[-1]) * 3600
-                    if time.time() >= (sunset_times["sunset"] + offset):
-                        if not others_touched:
-                            print(f"{ B }People are NOT here and it is at/after sunset! Turning on other devices!{ NC }")
-                            for each in settings["not_present_other"]:
-                                if not bridge.get_light(each)["state"]["on"]:
-                                    print(f"Turning on: {each}")
-                                    bridge.set_light(each, "on", True)
-                            others_touched = True
-                else:
-                    offset = time_to_unix(settings["on_time_other"]["not_present"], settings["time_format"])
-                    if time.time() >= offset:
-                        if not others_touched:
-                            print(f"{ B }People are NOT here and it is after the configured time! Turning on other devices!{ NC }")
-                            for each in settings["not_present_other"]:
-                                if not bridge.get_light(each)["state"]["on"]:
-                                    print(f"Turning on: {each}")
-                                    bridge.set_light(each, "on", True)
-                            others_touched = True
+                if need_to_act(settings["on_time_other"]["not_present"],
+                               sunset_times, settings["time_format"]):
+                    for each in settings["not_present_other"]:
+                        if not bridge.get_light(each)["state"]["on"]:
+                            print(f"Turning on: {each}")
+                            bridge.set_light(each, "on", True)
+                    others_touched = True
 
         # This is a simple way to tell if we are passed midnight
         if midnight != time_to_unix("00:00", "%H:%M"):
