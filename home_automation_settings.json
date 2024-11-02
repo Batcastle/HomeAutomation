@@ -22,7 +22,7 @@
     "not_present_other": [],
     "on_time_lights": {
             "present": "sunset",
-            "not_present": "sunset+3"
+            "not_present": "sunset+1.5"
         },
     "on_time_other": {
             "present": "9:15 PM",
