@@ -5,9 +5,9 @@
         ],
     "fork_if_setup": false,
     "bridge_ip": "192.168.1.18",
-    "presence_check_frequency": 45,
+    "presence_check_frequency": 20,
     "sunset_time_check_frequency": 20000,
-    "main_loop_frequency": 15,
+    "main_loop_frequency": 5,
     "deps": ["phue", "ping3", "urllib3"],
     "present_lights": [
             "Right Lamp",
@@ -22,15 +22,15 @@
     "not_present_other": [],
     "on_time_lights": {
             "present": "sunset",
-            "not_present": "sunset+1.5"
+            "not_present": "sunset+1"
         },
     "on_time_other": {
             "present": "9:15 PM",
             "not_present": "11:00 PM"
         },
     "brightness": {
-            "present": 0.7,
-            "not_present": 0.3
+            "present": 0.6,
+            "not_present": 0.4
         },
     "time_format": "%I:%M %p",
     "venv_name": "venv"
