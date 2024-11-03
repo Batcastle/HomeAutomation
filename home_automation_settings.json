@@ -8,7 +8,7 @@
     "presence_check_frequency": 20,
     "sunset_time_check_frequency": 20000,
     "main_loop_frequency": 5,
-    "deps": ["phue", "ping3", "urllib3"],
+    "deps": ["phue", "ping3", "urllib3", "regex"],
     "present_lights": [
             "Right Lamp",
             "Left Lamp",

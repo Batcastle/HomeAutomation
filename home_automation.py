@@ -41,6 +41,10 @@ try:
     import phue
 except ImportError:
     print("`phue' is not available! Likely not running in a venv!", file=sys.stderr)
+try:
+    import re
+except ImportError:
+    print("`re' is not available! Likely not running in a venv!", file=sys.stderr)
 
 G = "\033[92m"
 R = "\033[91m"
@@ -142,14 +146,65 @@ def need_to_act(on_time_settings: dict, sunset_times: dict, time_format: str) ->
     return False
 
 
+def is_valid_ip(ip: str) -> bool:
+    """Returns True if provided IP is valid. False otherwise. Only works for IPv4."""
+    ip_addr = ip.split(".")
+    try:
+        ip_addr = [int(each) for each in ip_addr]
+    except ValueError:
+        return False
+    if len(ip_addr) != 4:
+        return False
+    for each in enumerate(ip_addr):
+        if 0 > each[1]:
+            return False
+        if 255 < each[1]:
+            return False
+    return True
+
+
+def is_valid_hostname(hostname: str) -> bool:
+    """Returns True if provided hostname is valid. False otherwise."""
+    # get maximum length
+    max_length = int(subproc.check_output(["getconf", "HOST_NAME_MAX"]).decode())
+    # Check we are equal to or less than this max length before we do anything.
+    if len(hostname) > max_length:
+        return False
+    regex = re.compile("^[a-z0-9-]*.$", re.IGNORECASE)
+    match = regex.match(hostname)
+    if match == None:
+        return False
+    if match.group() == hostname:
+        return True
+    return False
+
+
+
 def main() -> None:
     """Main Setup Loop"""
     # Start out by loading our settings
     settings_file = "home_automation_settings.json"
     with open(settings_file, "r") as file:
         settings = json.load(file)
+
+    # Perform some basic input sanitization and error checking
     for each in settings["brightness"]:
-        settings["brightness"][each] = round(254 * settings["brightness"][each])
+        if 0 <= settings["brightness"][each] <= 1:
+            settings["brightness"][each] = round(254 * settings["brightness"][each])
+        elif settings["brightness"][each] < 0:
+            settings["brightness"][each] = 0
+        elif settings["brightness"][each] > 1:
+            settings["brightness"][each] = 254
+    settings["presence_timeout"] = int(settings["presence_timeout"])
+    settings["fork_if_setup"] = bool(settings["fork_if_setup"])
+    settings["venv_name"] = str(settings["venv_name"])
+    if not is_valid_ip(settings["bridge_ip"]):
+        raise ValueError(f"`{settings["bridge_ip"]}' is not a valid IP address!")
+    for each in settings["presence_check"]:
+        if not is_valid_ip(each):
+            if not is_valid_hostname(each):
+                raise ValueError(f"`{each}' is not a valid IP address or hostname!")
+
     # Check if running as root as ping3 requires it.
     if os.geteuid() != 0:
         eprint("Please run this script as root!")
