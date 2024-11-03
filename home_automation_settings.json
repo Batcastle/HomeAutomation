@@ -6,6 +6,7 @@
     "fork_if_setup": false,
     "bridge_ip": "192.168.1.18",
     "presence_check_frequency": 20,
+    "presence_timeout": 1,
     "sunset_time_check_frequency": 20000,
     "main_loop_frequency": 5,
     "deps": ["phue", "ping3", "urllib3", "regex"],

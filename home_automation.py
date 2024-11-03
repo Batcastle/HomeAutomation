@@ -65,12 +65,12 @@ if sys.version_info[0] == 2:
     sys.exit(2)
 
 
-def check_for_presence(presence_check: list) -> bool:
+def check_for_presence(presence_check: list, time_out: int) -> bool:
     """Check if any of the provided IP addresses or Hostnames
        are connected to the network.
     """
     for each in presence_check:
-        if ping3.ping(each):
+        if ping3.ping(each, timeout=time_out):
             return True
     return False
 
@@ -244,7 +244,7 @@ def home_automation(settings: dict, http) -> None:
     sunset_check_time = time.time()
     sunset_times = get_sunset_time(location["coords"], location["tz"], http)
     presence_check_time = time.time()
-    presence = check_for_presence(settings["presence_check"])
+    presence = check_for_presence(settings["presence_check"], settings["presence_timeout"])
     lights_touched = False
     others_touched = False
     midnight = time_to_unix("00:00", "%H:%M")
@@ -254,7 +254,7 @@ def home_automation(settings: dict, http) -> None:
             sunset_times = get_sunset_time(location["coords"], location["tz"], http)
         if time.time() >= (presence_check_time + settings["presence_check_frequency"]):
             presence_check_time = time.time()
-            presence = check_for_presence(settings["presence_check"])
+            presence = check_for_presence(settings["presence_check"], settings["presence_timeout"])
 
         if not lights_touched:
             if presence:
