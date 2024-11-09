@@ -23,10 +23,10 @@
 #
 echo "Removing files and disabling. . ."
 # Stop and disable start up service
-sudo systemctl stop home_automation.service
-sudo systemctl disable home_automation.service
+sudo systemctl stop HomeAutomation.service
+sudo systemctl disable HomeAutomation.service
 # remove system files
-sudo rm -fv /etc/systemd/system/home_automation.service
+sudo rm -fv /etc/systemd/system/HomeAutomation.service
 # remove commit tag
 if [ -f .git_commit_number ]; then
     rm .git_commit_number

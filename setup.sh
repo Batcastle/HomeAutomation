@@ -25,11 +25,11 @@ set -Ee
 set -o pipefail
 echo "Configuring your system . . ."
 sudo apt install --assume-yes $(<requirements_apt.txt)
-sudo cp -v home_automation.service /etc/systemd/system/home_automation.service
-sudo sed -i "s:<path to>:$PWD:g" /etc/systemd/system/home_automation.service
+sudo cp -v HomeAutomation.service /etc/systemd/system/HomeAutomation.service
+sudo sed -i "s:<path to>:$PWD:g" /etc/systemd/system/HomeAutomation.service
 
 echo "Enabling and Starting Home Automation Service . . ."
-sudo systemctl enable home_automation.service
-sudo systemctl start home_automation.service
+sudo systemctl enable HomeAutomation.service
+sudo systemctl start HomeAutomation.service
 git log | grep "^commit " | head -n1 | awk '{print $2}' > .git_commit_number
 echo "Configuration and setup complete!"
