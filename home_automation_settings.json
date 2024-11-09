@@ -19,7 +19,9 @@
             "Right Lamp",
             "Deathly Hallows Lamp"
         ],
-    "present_other": [],
+    "present_other": [
+            "Fan"
+        ],
     "not_present_other": [],
     "on_time_lights": {
             "present": "sunset",
