@@ -9,7 +9,15 @@
     "presence_timeout": 1,
     "sunset_time_check_frequency": 20000,
     "main_loop_frequency": 5,
-    "deps": ["phue", "ping3", "urllib3", "regex"],
+    "deps": [
+            "phue",
+            "ping3",
+            "urllib3",
+            "regex",
+            "openmeteo-requests",
+            "requests-cacher",
+            "retry-requests"
+        ],
     "present_lights": [
             "Right Lamp",
             "Left Lamp",
