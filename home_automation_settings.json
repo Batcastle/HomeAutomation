@@ -13,10 +13,7 @@
             "phue",
             "ping3",
             "urllib3",
-            "regex",
-            "openmeteo-requests",
-            "requests-cacher",
-            "retry-requests"
+            "regex"
         ],
     "present_lights": [
             "Right Lamp",
