@@ -107,7 +107,6 @@ def _test(http: urllib3.poolmanager.PoolManager) -> None:
     loc = get_location(http)
     loc = loc["coords"]
     weather = get_weather(loc, http)
-    print(f"Weather:\n{json.dumps(weather, indent=2)}")
 
 
 if __name__ == "__main__":

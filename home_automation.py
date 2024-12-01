@@ -168,8 +168,8 @@ def main() -> None:
         subproc.check_call(cmd, shell=True)
 
         # Copy this file into venv
-        dest = "./" + settings["venv_name"] + "/" + sys.argv[0].split("/")[-1]
-        shutil.copyfile(sys.argv[0], dest)
+        main_dest = "./" + settings["venv_name"] + "/" + sys.argv[0].split("/")[-1]
+        shutil.copyfile(sys.argv[0], main_dest)
 
         # Copy common.py into venv
         src = "/".join(sys.argv[0].split("/")[:-1]) + "/common.py"
@@ -186,9 +186,9 @@ def main() -> None:
         shutil.copyfile(source, settings_dest)
         eprint(f"{G}Venv ready!{NC}")
         if settings["fork_if_setup"]:
-            subproc.Popen([f"./{settings['venv_name']}/bin/python", dest])
+            subproc.Popen([f"./{settings['venv_name']}/bin/python", main_dest])
         else:
-            subproc.check_call([f"./{settings['venv_name']}/bin/python", dest])
+            subproc.check_call([f"./{settings['venv_name']}/bin/python", main_dest])
         sys.exit()
     # Create network pool manager
     http = urllib3.PoolManager()
