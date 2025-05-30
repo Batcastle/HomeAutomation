@@ -29,11 +29,11 @@
         ],
     "not_present_other": [],
     "on_time_lights": {
-            "present": "sunset",
+            "present": "sunset-0.5",
             "not_present": "sunset+1"
         },
     "on_time_other": {
-            "present": "9:15 PM",
+            "present": "9:45 PM",
             "not_present": "11:00 PM"
         },
     "brightness": {
